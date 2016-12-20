@@ -1,0 +1,6 @@
+# Binary files
+*.pyc
+
+# Backup (temporarly) files
+*.swp
+
