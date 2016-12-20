@@ -12,6 +12,7 @@ socket = SocketIO(app)
 
 plc = facom.Facom()
 plc.open('/dev/ttyUSB0')
+plc.set_discrete(facom.DISCRETE_M, 4, facom.ACTION_RESET)
 
 @app.route('/')
 def index():
