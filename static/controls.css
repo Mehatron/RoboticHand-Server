@@ -1,0 +1,30 @@
+.page {
+    text-align: center;
+}
+
+button {
+    background-color: #665544;
+    border: 0px;
+    color: white;
+    padding: 10px;
+    margin: 5px;
+}
+
+button.arrow {
+    margin: 0px;
+}
+
+button:hover {
+    background-color: #776655;
+}
+
+button:active {
+    background-color: #887766;
+}
+
+table {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+

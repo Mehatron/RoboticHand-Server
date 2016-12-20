@@ -3,6 +3,7 @@
     <head>
         <title>Robotic Hand</title>
         <script type="text/javascript" src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
         {% block head %}
         {% endblock %}
     </head>
@@ -17,6 +18,9 @@
                 {% block body %}
                 {% endblock %}
             </div>
+        </div>
+        <div class="footer">
+            &copy 2016 Milos Zivlak, Pavle Kukavica, Milan Prica
         </div>
     </body>
 </html>
