@@ -5,9 +5,11 @@ $(document).ready(function() {
 
     $("#btnModeSelect").click(function() {
         if($(this).text() == "Automatic") {
-            // TODO: Start manual mode
+            socket.emit("automatic", true);
+            $(this).text("Manual");
         } else {
-            // TODO: Start automatic mode
+            socket.emit("automatic", false);
+            $(this).text("Automatic");
         }
     });
 
