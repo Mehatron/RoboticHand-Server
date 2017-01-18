@@ -21,6 +21,7 @@ class RoboticHand:
     def init_state(self):
         'Initialize robotic hand state'
 
+        self.plc.start();
         self.grab(False)
         self.move_up()
         self.move_left()
@@ -67,6 +68,7 @@ class RoboticHand:
             self.plc.set_discrete(facom.DISCRETE_M, 46, facom.ACTION_SET)
         else:
             self.plc.set_discrete(facom.DISCRETE_M, 47, facom.ACTION_SET)
+        self.is_extend = extend;
     
     def grab(self, grab):
         'Pick/Place object'
