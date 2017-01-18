@@ -42,6 +42,7 @@ def automatic(automatic):
         robotic_hand.automatic(True)
     else:
         robotic_hand.automatic(False)
+    updateAll();
 
 @socket.on('rotate_up')
 def rotate_up():
