@@ -8,8 +8,9 @@
 class Exception : public std::exception
 {
 public:
-    Exception(const std::string &port, int code = 0);
-    virtual ~Exception(void);
+    Exception(const std::string &message, int code = 0)
+        : m_message(message), m_code(code) {};
+    virtual ~Exception(void) {};
 
     inline virtual const char *what(void) const throw() { return m_message.c_str(); };
     inline virtual std::string message(void) const { return m_message; };
