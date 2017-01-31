@@ -1,6 +1,9 @@
+# Build and binary files
+build/
+
 # Binary files
-*.pyc
+RoboticHand
 
-# Backup (temporarly) files
-*.swp
-
+# KDevelop
+*.kdev4
+.kdev4
