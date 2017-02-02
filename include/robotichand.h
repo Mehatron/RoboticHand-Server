@@ -18,6 +18,15 @@ public:
     struct State
     {
         Mode mode;
+        bool constructionDown       = false;
+        bool constructionUp         = false;
+        bool left                   = false;
+        bool right                  = false;
+        bool rotationDown           = false;
+        bool rotationUp             = false;
+        bool extendsUnextended      = false;
+        bool extendsExtended        = false;
+        bool picked                 = false;
     };
 
     void open(const std::string &port);
@@ -38,6 +47,8 @@ public:
     void place(void);
 
     void setMode(Mode mode);
+
+    void updateState(void);
 
 private:
     enum Action {

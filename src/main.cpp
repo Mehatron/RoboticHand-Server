@@ -8,7 +8,7 @@ int main(void)
     try {
         roboticHand.open("/dev/ttyUSB0");
         roboticHand.setMode(RoboticHand::ModeManual);
-        roboticHand.moveUp();
+        roboticHand.moveDown();
         roboticHand.close();
     } catch(Exception &ex) {}
 

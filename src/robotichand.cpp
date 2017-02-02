@@ -110,3 +110,26 @@ void RoboticHand::place(void)
 {
     sendAction(ActionPlace);
 }
+
+void RoboticHand::updateState(void)
+{
+    unsigned char sensors[9];
+    unsigned char automatic[1];
+
+    int err = FACOM_getDiscretes(DISCRETE_X, 0, 9, sensors);
+    if(err < 0)
+        throw Exception("FACOM error: " + std::to_string(err), err);
+    err = FACOM_getDiscretes(DISCRETE_M, 0, 1, automatic);
+    if(err < 0)
+        throw Exception("FACOM error: " + std::to_string(err), err);
+
+    m_state.constructionDown = sensors[0];
+    m_state.constructionUp = sensors[1];
+    m_state.left = sensors[2];
+    m_state.right = sensors[3];
+    m_state.rotationDown = sensors[4];
+    m_state.rotationUp = sensors[5];
+    m_state.extendsUnextended = sensors[6];
+    m_state.extendsExtended = sensors[7];
+    m_state.picked = sensors[8];
+}
