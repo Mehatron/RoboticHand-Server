@@ -1,5 +1,6 @@
 #include "robotichand.h"
 
+#include <iostream>
 #include <string>
 #include <facom/facom.h>
 #include <facom/error.h>
@@ -123,6 +124,7 @@ void RoboticHand::updateState(void)
     if(err < 0)
         throw Exception("FACOM error: " + std::to_string(err), err);
 
+    State currentState = m_state;
     m_state.constructionDown = sensors[0];
     m_state.constructionUp = sensors[1];
     m_state.left = sensors[2];
@@ -131,5 +133,58 @@ void RoboticHand::updateState(void)
     m_state.rotationUp = sensors[5];
     m_state.extendsUnextended = sensors[6];
     m_state.extendsExtended = sensors[7];
-    m_state.picked = sensors[8];
+    m_state.picked = !sensors[8];
+
+    if(automatic[0])
+        m_state.mode = ModeAutomatic;
+    else
+        m_state.mode = ModeManual;
+
+    if(m_state == currentState)
+        return;
+}
+
+bool operator==(const RoboticHand::State &lhs, const RoboticHand::State &rhs)
+{
+    if(lhs.mode != rhs.mode)
+        return false;
+    if(lhs.constructionDown != rhs.constructionDown)
+        return false;
+    if(lhs.constructionUp != rhs.constructionUp)
+        return false;
+    if(lhs.left != rhs.left)
+        return false;
+    if(lhs.right != rhs.right)
+        return false;
+    if(lhs.rotationDown != rhs.rotationDown)
+        return false;
+    if(lhs.rotationUp != rhs.rotationUp)
+        return false;
+    if(lhs.extendsUnextended != rhs.extendsUnextended)
+        return false;
+    if(lhs.extendsExtended != rhs.extendsExtended)
+        return false;
+    if(lhs.picked != rhs.picked)
+        return false;
+
+    return true;
+}
+
+std::ostream &operator<<(std::ostream &lhs, const RoboticHand &rhs)
+{
+    RoboticHand::State state = rhs.m_state;
+
+    lhs << "{" << std::endl
+        << "\t" << "Down:          " << state.constructionDown << std::endl
+        << "\t" << "Up:            " << state.constructionUp << std::endl
+        << "\t" << "Left:          " << state.left << std::endl
+        << "\t" << "Right:         " << state.right << std::endl
+        << "\t" << "Rotation Up :  " << state.rotationUp << std::endl
+        << "\t" << "Rotation Down: " << state.rotationDown << std::endl
+        << "\t" << "Extended:      " << state.extendsExtended << std::endl
+        << "\t" << "UnExteded:     " << state.extendsUnextended << std::endl
+        << "\t" << "Picked:        " << state.picked << std::endl
+        << "}" << std::endl;
+
+    return lhs;
 }

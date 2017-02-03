@@ -2,6 +2,7 @@
 #define _ROBOTIC_HAND_H_
 
 #include <string>
+#include <ostream>
 
 class RoboticHand
 {
@@ -50,6 +51,8 @@ public:
 
     void updateState(void);
 
+    friend std::ostream &operator<<(std::ostream &lhs, const RoboticHand &rhs);
+
 private:
     enum Action {
         ActionMoveUp        = 40,
@@ -69,5 +72,11 @@ private:
     bool m_open;
     State m_state;
 };
+
+bool operator==(const RoboticHand::State &lhs, const RoboticHand::State &rhs);
+/*
+bool operator!=(const RoboticHand::State &lhs, const RoboticHand::State &rhs)
+    { return !operator==(lhs, rhs); };
+*/
 
 #endif // _ROBOTIC_HAND_H_
