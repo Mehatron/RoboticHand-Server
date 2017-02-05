@@ -37,16 +37,16 @@ public:
     State getState(void) const { return m_state; };
     Mode getMode(void) const { return m_state.mode; };
 
-    void moveUp(void);
-    void moveDown(void);
-    void moveRight(void);
-    void moveLeft(void);
-    void rotateUp(void);
-    void rotateDown(void);
-    void extend(void);
-    void unextend(void);
-    void pick(void);
-    void place(void);
+    inline void moveUp(void) { sendAction(ActionMoveUp); };
+    inline void moveDown(void) { sendAction(ActionMoveDown); };
+    inline void moveRight(void) { sendAction(ActionMoveRight); };
+    inline void moveLeft(void) { sendAction(ActionMoveLeft); };
+    inline void rotateUp(void) { sendAction(ActionRotateUp); };
+    inline void rotateDown(void) { sendAction(ActionRotateDown); };
+    inline void extend(void) { sendAction(ActionExtend); };
+    inline void unextend(void) { sendAction(ActionUnExtend); };
+    inline void pick(void) { sendAction(ActionPick); };
+    inline void place(void) { sendAction(ActionPlace); };
 
     void setMode(Mode mode);
 

@@ -67,56 +67,6 @@ void RoboticHand::setMode(Mode mode)
         throw Exception("FACOM error: " + std::to_string(err), err);
 }
 
-void RoboticHand::moveUp(void)
-{
-    sendAction(ActionMoveUp);
-}
-
-void RoboticHand::moveDown(void)
-{
-    sendAction(ActionMoveDown);
-}
-
-void RoboticHand::moveRight(void)
-{
-    sendAction(ActionMoveRight);
-}
-
-void RoboticHand::moveLeft(void)
-{
-    sendAction(ActionMoveLeft);
-}
-
-void RoboticHand::rotateUp(void)
-{
-    sendAction(ActionRotateUp);
-}
-
-void RoboticHand::rotateDown(void)
-{
-    sendAction(ActionRotateDown);
-}
-
-void RoboticHand::extend(void)
-{
-    sendAction(ActionExtend);
-}
-
-void RoboticHand::unextend(void)
-{
-    sendAction(ActionUnExtend);
-}
-
-void RoboticHand::pick(void)
-{
-    sendAction(ActionPick);
-}
-
-void RoboticHand::place(void)
-{
-    sendAction(ActionPlace);
-}
-
 void RoboticHand::updateState(void)
 {
     unsigned char sensors[9];
