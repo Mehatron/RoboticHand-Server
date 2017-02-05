@@ -16,7 +16,7 @@ include_directories(
 
 set(SOURCES
     src/robotichand.cpp
-    src/websocket.cpp
+    src/server.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")

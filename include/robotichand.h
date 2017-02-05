@@ -3,6 +3,7 @@
 
 #include <string>
 #include <ostream>
+#include <functional>
 
 class RoboticHand
 {
@@ -49,7 +50,11 @@ public:
 
     void setMode(Mode mode);
 
+    void setOnStateChangedHandler(std::function<void(const State &state)> &handler)
+        { m_onStateChangedHandler = handler; };
+
     void updateState(void);
+    void update(void);
 
     friend std::ostream &operator<<(std::ostream &lhs, const RoboticHand &rhs);
 
@@ -71,12 +76,12 @@ private:
 
     bool m_open;
     State m_state;
+
+    std::function <void(const State &state)> m_onStateChangedHandler;
 };
 
 bool operator==(const RoboticHand::State &lhs, const RoboticHand::State &rhs);
-/*
-bool operator!=(const RoboticHand::State &lhs, const RoboticHand::State &rhs)
+inline bool operator!=(const RoboticHand::State &lhs, const RoboticHand::State &rhs)
     { return !operator==(lhs, rhs); };
-*/
 
 #endif // _ROBOTIC_HAND_H_

@@ -8,17 +8,16 @@
 #include "exception.h"
 
 RoboticHand::RoboticHand(void)
-    : m_open(false)
+    : m_open(false),
+      m_onStateChangedHandler(nullptr)
 {
 }
 
-
 RoboticHand::RoboticHand(const std::string &port)
-    : m_open(false)
+    : m_open(false),
+      m_onStateChangedHandler(nullptr)
 {
-    try {
-        open(port);
-    } catch(Exception &ex) {}
+    open(port);
 }
 
 RoboticHand::~RoboticHand(void)
@@ -45,6 +44,9 @@ void RoboticHand::close()
 
 void RoboticHand::sendAction(RoboticHand::Action action)
 {
+    if(!m_open)
+        throw Exception("Konekcija nije otvorena");
+
     int err = FACOM_setDiscrete(DISCRETE_M, action, ACTION_SET);
     if(err < 0)
         throw Exception("FACOM error: " + std::to_string(err), err);
@@ -52,6 +54,9 @@ void RoboticHand::sendAction(RoboticHand::Action action)
 
 void RoboticHand::setMode(Mode mode)
 {
+    if(!m_open)
+        throw Exception("Konekcija nije otvorena");
+
     int err = 0;
     if(mode == ModeAutomatic)
         err = FACOM_setDiscrete(DISCRETE_M, 4, ACTION_SET);
@@ -140,8 +145,8 @@ void RoboticHand::updateState(void)
     else
         m_state.mode = ModeManual;
 
-    if(m_state == currentState)
-        return;
+    if(m_state != currentState && m_onStateChangedHandler)
+        m_onStateChangedHandler(m_state);
 }
 
 bool operator==(const RoboticHand::State &lhs, const RoboticHand::State &rhs)

@@ -1,4 +1,4 @@
-#include "websocket.h"
+#include "server.h"
 
 #include <iostream>
 #include <boost/bind.hpp>
@@ -8,22 +8,20 @@
 
 using nlohmann::json;
 
-WebSocket::WebSocket(void)
+Server::Server(void)
 {
 }
 
-WebSocket::~WebSocket(void)
+Server::~Server(void)
 {
 }
 
-void WebSocket::start(int port)
+void Server::start(void)
 {
-    //m_server.set_message_handler(websocketpp::lib::bind(&onMessageRecived, this));
-    //m_server.set_message_handler(boost::bind(&WebSocket::onMessageRecived, this));
     try {
         setupHandlers();
         m_server.init_asio();
-        m_server.listen(port);
+        m_server.listen(Server::PORT);
         m_server.start_accept();
 
         m_server.run();
@@ -32,18 +30,18 @@ void WebSocket::start(int port)
     }
 }
 
-void WebSocket::onClientConnected(const websocketpp::connection_hdl &hdl)
+void Server::onClientConnected(const websocketpp::connection_hdl &hdl)
 {
     m_clients.insert(hdl);
 }
 
-void WebSocket::onClientDisconnected(const websocketpp::connection_hdl &hdl)
+void Server::onClientDisconnected(const websocketpp::connection_hdl &hdl)
 {
     m_clients.erase(hdl);
 }
 
-void WebSocket::onMessageRecived(const websocketpp::connection_hdl &hdl,
-                                 const WSServer::message_ptr &msg)
+void Server::onMessageRecived(const websocketpp::connection_hdl &hdl,
+                              const WSServer::message_ptr &msg)
 {
     std::cout << msg->get_payload() << std::endl;
     for(auto client : m_clients)
@@ -57,7 +55,7 @@ void WebSocket::onMessageRecived(const websocketpp::connection_hdl &hdl,
     }
 }
 
-void WebSocket::setupHandlers(void)
+void Server::setupHandlers(void)
 {
     m_server.set_open_handler([this](const websocketpp::connection_hdl &hdl)
         {

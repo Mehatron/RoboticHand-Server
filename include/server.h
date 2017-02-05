@@ -6,13 +6,17 @@
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 
-class WebSocket
+#include "robotichand.h"
+
+class Server
 {
 public:
-    WebSocket(void);
-    ~WebSocket(void);
+    Server(void);
+    ~Server(void);
 
-    void start(int port = 8272);
+    const int PORT          = 8272;
+
+    void start(void);
 
 private:
     typedef websocketpp::server<websocketpp::config::asio> WSServer;
@@ -27,6 +31,8 @@ private:
 
     WSServer m_server;
     WSClientList m_clients;
+
+    RoboticHand m_roboticHand;
 };
 
 #endif // _WEBSOCKET_H_

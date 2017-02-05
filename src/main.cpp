@@ -1,6 +1,6 @@
 #include "exception.h"
 #include "robotichand.h"
-#include "websocket.h"
+#include "server.h"
 
 #include <iostream>
 
@@ -21,9 +21,9 @@ int main(void)
     }
     */
 
-    WebSocket connection;
+    Server connection;
     try {
-        connection.start(8272);
+        connection.start();
     } catch(Exception &ex) {
         std::cout << ex << std::endl;
     }
