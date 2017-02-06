@@ -29,6 +29,9 @@ private:
                           const WSServer::message_ptr &msg);
     void setupHandlers(void);
 
+    void sendState(const websocketpp::connection_hdl &client,
+                   const RoboticHand::State &state);
+
     WSServer m_server;
     WSClientList m_clients;
 

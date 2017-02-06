@@ -19,7 +19,7 @@ public:
 
     struct State
     {
-        Mode mode;
+        Mode mode                   = ModeAutomatic;
         bool constructionDown       = false;
         bool constructionUp         = false;
         bool left                   = false;
