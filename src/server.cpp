@@ -25,6 +25,14 @@ void Server::start(void)
         m_server.listen(Server::PORT);
         m_server.start_accept();
 
+        m_roboticHand.open("/dev/ttyUSB0");
+        m_roboticHand.setMode(RoboticHand::ModeManual);
+        m_roboticHand.moveUp();
+        m_roboticHand.unextend();
+        m_roboticHand.rotateDown();
+        m_roboticHand.updateState();
+
+        m_roboticHand.start();
         m_server.run();
     } catch(websocketpp::exception &ex) {
         throw Exception(ex.what());
@@ -76,6 +84,12 @@ void Server::onMessageRecived(const websocketpp::connection_hdl &hdl,
     }
 }
 
+void Server::onRoboticHandStateChanged(const RoboticHand::State &state)
+{
+    for(auto client : m_clients)
+        sendState(client, state);
+}
+
 void Server::setupHandlers(void)
 {
     m_server.set_open_handler([this](const websocketpp::connection_hdl &hdl)
@@ -90,6 +104,10 @@ void Server::setupHandlers(void)
                                         const WSServer::message_ptr &msg)
         {
             onMessageRecived(hdl, msg);
+        });
+    m_roboticHand.setOnStateChangedHandler([this](const RoboticHand::State &state)
+        {
+            onRoboticHandStateChanged(state);
         });
 }
 
@@ -108,6 +126,5 @@ void Server::sendState(const websocketpp::connection_hdl &client,
         { "extends_extended", state.extendsExtended },
         { "picked", state.picked }
     };
-    std::cout << data.dump(4) << std::endl;
-    m_server.send(client, data.dump(4), websocketpp::frame::opcode::text);
+    m_server.send(client, data.dump(), websocketpp::frame::opcode::text);
 }

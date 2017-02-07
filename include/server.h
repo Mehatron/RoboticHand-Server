@@ -27,6 +27,7 @@ private:
     void onClientDisconnected(const websocketpp::connection_hdl &hdl);
     void onMessageRecived(const websocketpp::connection_hdl &hdl,
                           const WSServer::message_ptr &msg);
+    void onRoboticHandStateChanged(const RoboticHand::State &state);
     void setupHandlers(void);
 
     void sendState(const websocketpp::connection_hdl &client,

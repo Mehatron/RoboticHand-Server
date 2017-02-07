@@ -4,6 +4,9 @@
 #include <string>
 #include <ostream>
 #include <functional>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 class RoboticHand
 {
@@ -50,11 +53,13 @@ public:
 
     void setMode(Mode mode);
 
-    void setOnStateChangedHandler(std::function<void(const State &state)> &handler)
+    void setOnStateChangedHandler(std::function<void(const State&)> handler)
         { m_onStateChangedHandler = handler; };
 
     void updateState(void);
-    void update(void);
+
+    void start(void);
+    void stop(void);
 
     friend std::ostream &operator<<(std::ostream &lhs, const RoboticHand &rhs);
 
@@ -74,10 +79,18 @@ private:
 
     void sendAction(Action action);
 
+    void update(void);
+
     bool m_open;
     State m_state;
+    std::mutex m_stateMutex;
 
-    std::function <void(const State &state)> m_onStateChangedHandler;
+    std::function <void(const State&)> m_onStateChangedHandler;
+
+    std::thread m_updateThread;
+    bool m_updateThreadRunning;
+    std::mutex m_updateThreadRunningMutex;
+    std::condition_variable m_cvUpdateThreadRunning;
 };
 
 bool operator==(const RoboticHand::State &lhs, const RoboticHand::State &rhs);
