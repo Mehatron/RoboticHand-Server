@@ -61,6 +61,9 @@ public:
     void start(void);
     void stop(void);
 
+    void lock(void);
+    void unlock(void);
+
     friend std::ostream &operator<<(std::ostream &lhs, const RoboticHand &rhs);
 
 private:

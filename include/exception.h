@@ -24,7 +24,6 @@ private:
 inline std::ostream &operator<<(std::ostream &lhs, const Exception &rhs)
 {
     lhs << "[" << rhs.code() << "]: " << rhs.what() << std::endl;
-    lhs << rhs.what();
     return lhs;
 }
 
