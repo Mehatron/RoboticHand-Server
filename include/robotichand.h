@@ -12,7 +12,7 @@ class RoboticHand
 {
 public:
     RoboticHand(void);
-    RoboticHand(const std::string &port);
+    RoboticHand(const std::string &portFatek, const std::string &portUnitronics);
     ~RoboticHand(void);
 
     enum Mode {
@@ -34,7 +34,7 @@ public:
         bool picked                 = false;
     };
 
-    void open(const std::string &port);
+    void open(const std::string &portFatek, const std::string &portunitronics);
     void close(void);
 
     State getState(void) const { return m_state; };

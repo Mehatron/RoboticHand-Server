@@ -17,11 +17,19 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 set(Boost_USE_STATIC_LIBS   ON)
 
 find_package(Boost COMPONENTS system REQUIRED)
+<<<<<<< HEAD
 find_library(FACOM facom PATH /usr/armv6j-hardfloat-linux-gnueabi/lib/)
 find_package(Threads REQUIRED)
+=======
+find_library(FACOM facom PATH /usr/local/lib/)
+find_library(UNIPROT uniprot PATH /usr/local/lib/)
+>>>>>>> master
 
 if(NOT FACOM)
     message(FATAL_ERROR "ERROR: Can't find FaCom")
+endif()
+if(NOT UNIPROT)
+    message(FATAL_ERROR "ERROR: Can't find UniProt")
 endif()
 
 include_directories(include/)
@@ -38,5 +46,9 @@ set(SOURCES
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)
+<<<<<<< HEAD
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} ${FACOM} Threads::Threads)
+=======
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} ${FACOM} ${UNIPROT})
+>>>>>>> master
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)

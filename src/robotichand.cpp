@@ -5,6 +5,8 @@
 #include <chrono>
 #include <facom/facom.h>
 #include <facom/error.h>
+#include <uniprot/uniprot.h>
+#include <uniprot/error.h>
 
 #include <iostream>
 
@@ -17,12 +19,12 @@ RoboticHand::RoboticHand(void)
 {
 }
 
-RoboticHand::RoboticHand(const std::string &port)
+RoboticHand::RoboticHand(const std::string &portFatek, const std::string &portUnitronics)
     : m_open(false),
       m_onStateChangedHandler(nullptr),
       m_updateThreadRunning(false)
 {
-    open(port);
+    open(portFatek, portUnitronics);
 }
 
 RoboticHand::~RoboticHand(void)
@@ -34,13 +36,21 @@ RoboticHand::~RoboticHand(void)
     } catch(Exception &ex) {}
 }
 
-void RoboticHand::open(const std::string &port)
+void RoboticHand::open(const std::string &portFatek, const std::string &portUnitronics)
 {
     if(m_open)
         return;
-    int err = FACOM_open(port.c_str(), 0x01);
+
+    int err = FACOM_open(portFatek.c_str(), 0x01);
     if(err < 0)
         throw Exception("FACOM error: " + std::to_string(err), err);
+    err = FACOM_start();
+    if(err < 0)
+        throw Exception("FACOM error: " + std::to_string(err), err);
+    err = UNIPROT_open(portUnitronics.c_str());
+    if(err < 0)
+        throw Exception("UNIPROT error: " + std::to_string(err), err);
+
     m_open = true;
 }
 
@@ -48,6 +58,7 @@ void RoboticHand::close()
 {
     if(!m_open)
         return;
+
     int err = FACOM_close();
     m_open = false;
     if(err < 0)
@@ -73,9 +84,9 @@ void RoboticHand::setMode(Mode mode)
     int err = 0;
     std::lock_guard<std::mutex> lockState(m_stateMutex);
     if(mode == ModeAutomatic)
-        err = FACOM_setDiscrete(DISCRETE_M, 4, ACTION_SET);
+        err = FACOM_setDiscrete(DISCRETE_M, 1, ACTION_SET);
     else
-        err = FACOM_setDiscrete(DISCRETE_M, 4, ACTION_RESET);
+        err = FACOM_setDiscrete(DISCRETE_M, 1, ACTION_RESET);
 
     if(err < 0)
         throw Exception("FACOM error: " + std::to_string(err), err);
@@ -83,16 +94,16 @@ void RoboticHand::setMode(Mode mode)
 
 void RoboticHand::updateState(void)
 {
-    std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+    //std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
     unsigned char sensors[9];
-    unsigned char automatic[1];
+    unsigned char status[11];
 
 
     std::lock_guard<std::mutex> lkState(m_stateMutex);
     int err = FACOM_getDiscretes(DISCRETE_X, 0, 9, sensors);
     if(err < 0)
         throw Exception("FACOM error: " + std::to_string(err), err);
-    err = FACOM_getDiscretes(DISCRETE_M, 4, 1, automatic);
+    err = FACOM_getDiscretes(DISCRETE_M, 0, 11, status);
     if(err < 0)
         throw Exception("FACOM error: " + std::to_string(err), err);
 
@@ -107,10 +118,32 @@ void RoboticHand::updateState(void)
     currentState.extendsExtended = sensors[7];
     currentState.picked = !sensors[8];
 
-    if(automatic[0])
+    if(status[1])
+    {
         currentState.mode = ModeAutomatic;
+
+        if(currentState.constructionUp &&
+           currentState.right &&
+           currentState.rotationUp &&
+           currentState.extendsUnextended &&
+           !currentState.picked)
+        {
+            int err = 0;
+            if(status[8])
+                err = UNIPROT_write("11");
+            if(status[9])
+                err = UNIPROT_write("21");
+            if(status[10])
+                err = UNIPROT_write("31");
+
+            if(err < 0)
+                throw Exception("UNIPROT error: " + std::to_string(err), err);
+        }
+    }
     else
+    {
         currentState.mode = ModeManual;
+    }
 
     if(currentState != m_state)
     {
@@ -119,9 +152,9 @@ void RoboticHand::updateState(void)
         if(m_onStateChangedHandler)
             m_onStateChangedHandler(m_state);
     }
-    std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-    auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "Time: " << diff.count() << std::endl;
+    //std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+    //auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    //std::cout << "Time: " << diff.count() << std::endl;
 }
 
 /*
