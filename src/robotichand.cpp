@@ -118,7 +118,10 @@ void RoboticHand::updateState(void)
     currentState.extendsExtended = sensors[7];
     currentState.picked = !sensors[8];
 
-    if(status[1])
+    if(status[0])
+    {
+        currentState.mode = ModeLock;
+    } else if(status[1])
     {
         currentState.mode = ModeAutomatic;
 

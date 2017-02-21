@@ -40,6 +40,15 @@ void Server::start(void)
     }
 }
 
+void Server::toggleLock(void)
+{
+    RoboticHand::Mode mode = m_roboticHand.getMode();
+    if(mode == RoboticHand::ModeLock)
+        m_roboticHand.unlock();
+    else
+        m_roboticHand.lock();
+}
+
 void Server::onClientConnected(const websocketpp::connection_hdl &hdl)
 {
     m_clients.insert(hdl);

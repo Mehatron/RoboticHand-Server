@@ -3,6 +3,24 @@
 #include "server.h"
 
 #include <iostream>
+#include <csignal>
+#include <unistd.h>
+
+Server server;
+
+void signalHandler(int signum)
+{
+    std::cout << signum << std::endl;
+    switch(signum)
+    {
+        case SIGINT:
+            std::exit(0);
+            break;
+        case SIGUSR1:
+            server.toggleLock();
+            break;
+    }
+}
 
 int main(void)
 {
@@ -21,9 +39,11 @@ int main(void)
     }
     */
 
-    Server connection;
+    std::signal(SIGINT, signalHandler);
+    std::signal(SIGUSR1, signalHandler);
+
     try {
-        connection.start();
+        server.start();
     } catch(Exception &ex) {
         std::cout << ex << std::endl;
     }

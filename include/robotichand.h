@@ -17,7 +17,8 @@ public:
 
     enum Mode {
         ModeAutomatic = 0,
-        ModeManual
+        ModeManual,
+        ModeLock
     };
 
     struct State
