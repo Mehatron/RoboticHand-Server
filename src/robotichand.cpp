@@ -6,6 +6,8 @@
 #include <facom/facom.h>
 #include <facom/error.h>
 
+#include <iostream>
+
 #include "exception.h"
 
 RoboticHand::RoboticHand(void)
@@ -81,6 +83,7 @@ void RoboticHand::setMode(Mode mode)
 
 void RoboticHand::updateState(void)
 {
+    std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
     unsigned char sensors[9];
     unsigned char automatic[1];
 
@@ -116,6 +119,9 @@ void RoboticHand::updateState(void)
         if(m_onStateChangedHandler)
             m_onStateChangedHandler(m_state);
     }
+    std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+    auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << "Time: " << diff.count() << std::endl;
 }
 
 /*
@@ -154,6 +160,18 @@ void RoboticHand::stop(void)
     std::lock_guard<std::mutex> lkRunning(m_updateThreadRunningMutex);
     m_updateThreadRunning = false;
     m_cvUpdateThreadRunning.notify_all();
+}
+
+void RoboticHand::lock(void)
+{
+    std::lock_guard<std::mutex> lkRunning(m_updateThreadRunningMutex);
+    FACOM_setDiscrete(DISCRETE_M, 0, ACTION_RESET);
+}
+
+void RoboticHand::unlock(void)
+{
+    std::lock_guard<std::mutex> lkRunning(m_updateThreadRunningMutex);
+    FACOM_setDiscrete(DISCRETE_M, 0, ACTION_SET);
 }
 
 bool operator==(const RoboticHand::State &lhs, const RoboticHand::State &rhs)
