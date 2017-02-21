@@ -47,9 +47,9 @@ void RoboticHand::open(const std::string &portFatek, const std::string &portUnit
     err = FACOM_start();
     if(err < 0)
         throw Exception("FACOM error: " + std::to_string(err), err);
-    err = UNIPROT_open(portUnitronics.c_str());
-    if(err < 0)
-        throw Exception("UNIPROT error: " + std::to_string(err), err);
+    //err = UNIPROT_open(portUnitronics.c_str());
+    //if(err < 0)
+        //throw Exception("UNIPROT error: " + std::to_string(err), err);
 
     m_open = true;
 }

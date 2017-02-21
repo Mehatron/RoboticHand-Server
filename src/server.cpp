@@ -25,7 +25,7 @@ void Server::start(void)
         m_server.listen(Server::PORT);
         m_server.start_accept();
 
-        m_roboticHand.open("/dev/ttyUSB1", "/dev/ttyUSB0");
+        m_roboticHand.open("/dev/ttyUSB0", "/dev/ttyUSB1");
         m_roboticHand.unlock();
         m_roboticHand.setMode(RoboticHand::ModeManual);
         m_roboticHand.moveUp();
