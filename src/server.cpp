@@ -89,6 +89,36 @@ void Server::onMessageRecived(const websocketpp::connection_hdl &hdl,
             m_roboticHand.pick();
         else if(command == "place")
             m_roboticHand.place();
+        else
+        {
+            RoboticHand::State state = m_roboticHand.getState();
+
+            if(command == "right_right")
+            {
+                if(state.rotationUp && state.extendsUnextended)
+                    m_roboticHand.extend();
+                else if(state.rotationDown)
+                    m_roboticHand.rotateUp();
+            } else if(command == "right_up")
+            {
+                if(state.rotationDown && state.extendsExtended)
+                    m_roboticHand.unextend();
+                else if(state.rotationDown && state.extendsUnextended)
+                    m_roboticHand.rotateUp();
+            } else if(command == "right_left")
+            {
+                if(state.rotationUp && state.extendsExtended)
+                    m_roboticHand.unextend();
+                else if(state.rotationUp && state.extendsUnextended)
+                    m_roboticHand.rotateDown();
+            } else if(command == "right_down")
+            {
+                if(state.rotationUp && state.extendsExtended)
+                    m_roboticHand.unextend();
+                else if(state.rotationUp && state.extendsUnextended)
+                    m_roboticHand.rotateDown();
+            }
+        }
     } catch(Exception &ex) {
         std::cout << ex << std::endl;
     }
