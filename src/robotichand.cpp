@@ -8,8 +8,6 @@
 #include <uniprot/uniprot.h>
 #include <uniprot/error.h>
 
-#include <iostream>
-
 #include "exception.h"
 
 RoboticHand::RoboticHand(void)
@@ -118,7 +116,7 @@ void RoboticHand::updateState(void)
     currentState.extendsExtended = sensors[7];
     currentState.picked = !sensors[8];
 
-    if(status[0])
+    if(!status[0])
     {
         currentState.mode = ModeLock;
     } else if(status[1])
