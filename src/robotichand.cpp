@@ -133,8 +133,8 @@ void RoboticHand::updateState(void)
         else if(status[13])
             err = UNIPROT_write("31");
 
-            if(err < 0)
-                throw Exception("UNIPROT error: " + std::to_string(err), err);
+        if(err < 0)
+            throw Exception("UNIPROT error: " + std::to_string(err), err);
     } else
     {
         currentState.mode = ModeManual;

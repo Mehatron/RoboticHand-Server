@@ -155,7 +155,6 @@ void Server::sendState(const websocketpp::connection_hdl &client,
                        const RoboticHand::State &state)
 {
     json data = {
-        { "mode", state.mode == RoboticHand::ModeAutomatic ? "automatic" : "manual" },
         { "construction_down", state.constructionDown },
         { "construction_up", state.constructionUp },
         { "left", state.left },
@@ -166,5 +165,19 @@ void Server::sendState(const websocketpp::connection_hdl &client,
         { "extends_extended", state.extendsExtended },
         { "picked", state.picked }
     };
+
+    switch(state.mode)
+    {
+        case RoboticHand::ModeAutomatic:
+            data["mode"] = "automatic";
+            break;
+        case RoboticHand::ModeManual:
+            data["mode"] = "manual";
+            break;
+        default:
+            data["mode"] = "lock";
+            break;
+    }
+
     m_server.send(client, data.dump(), websocketpp::frame::opcode::text);
 }
