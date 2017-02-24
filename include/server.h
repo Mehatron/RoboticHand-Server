@@ -17,6 +17,7 @@ public:
     const int PORT          = 8272;
 
     void start(void);
+    void toggleLock(void);
 
 private:
     typedef websocketpp::server<websocketpp::config::asio> WSServer;

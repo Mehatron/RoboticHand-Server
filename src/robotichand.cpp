@@ -96,14 +96,14 @@ void RoboticHand::updateState(void)
 {
     //std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
     unsigned char sensors[9];
-    unsigned char status[11];
+    unsigned char status[14];
 
 
     std::lock_guard<std::mutex> lkState(m_stateMutex);
     int err = FACOM_getDiscretes(DISCRETE_X, 0, 9, sensors);
     if(err < 0)
         throw Exception("FACOM error: " + std::to_string(err), err);
-    err = FACOM_getDiscretes(DISCRETE_M, 0, 11, status);
+    err = FACOM_getDiscretes(DISCRETE_M, 0, 14, status);
     if(err < 0)
         throw Exception("FACOM error: " + std::to_string(err), err);
 
@@ -118,29 +118,24 @@ void RoboticHand::updateState(void)
     currentState.extendsExtended = sensors[7];
     currentState.picked = !sensors[8];
 
-    if(status[1])
+    if(status[0])
+    {
+        currentState.mode = ModeLock;
+    } else if(status[1])
     {
         currentState.mode = ModeAutomatic;
 
-        if(currentState.constructionUp &&
-           currentState.right &&
-           currentState.rotationUp &&
-           currentState.extendsUnextended &&
-           !currentState.picked)
-        {
-            int err = 0;
-            if(status[8])
-                err = UNIPROT_write("11");
-            if(status[9])
-                err = UNIPROT_write("21");
-            if(status[10])
-                err = UNIPROT_write("31");
+        int err = 0;
+        if(status[11])
+            err = UNIPROT_write("11");
+        else if(status[12])
+            err = UNIPROT_write("21");
+        else if(status[13])
+            err = UNIPROT_write("31");
 
-            if(err < 0)
-                throw Exception("UNIPROT error: " + std::to_string(err), err);
-        }
-    }
-    else
+        if(err < 0)
+            throw Exception("UNIPROT error: " + std::to_string(err), err);
+    } else
     {
         currentState.mode = ModeManual;
     }
