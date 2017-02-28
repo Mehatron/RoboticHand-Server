@@ -8,8 +8,6 @@
 #include <uniprot/uniprot.h>
 #include <uniprot/error.h>
 
-#include <iostream>
-
 #include "exception.h"
 
 RoboticHand::RoboticHand(void)
@@ -118,7 +116,7 @@ void RoboticHand::updateState(void)
     currentState.extendsExtended = sensors[7];
     currentState.picked = !sensors[8];
 
-    if(status[0])
+    if(!status[0])
     {
         currentState.mode = ModeLock;
     } else if(status[1])
@@ -127,11 +125,18 @@ void RoboticHand::updateState(void)
 
         int err = 0;
         if(status[11])
+        {
             err = UNIPROT_write("11");
-        else if(status[12])
+            FACOM_setDiscrete(DISCRETE_M, 11, ACTION_RESET);
+        } else if(status[12])
+        {
             err = UNIPROT_write("21");
-        else if(status[13])
+            FACOM_setDiscrete(DISCRETE_M, 12, ACTION_RESET);
+        } else if(status[13])
+        {
             err = UNIPROT_write("31");
+            FACOM_setDiscrete(DISCRETE_M, 13, ACTION_RESET);
+        }
 
         if(err < 0)
             throw Exception("UNIPROT error: " + std::to_string(err), err);
@@ -192,14 +197,16 @@ void RoboticHand::stop(void)
 
 void RoboticHand::lock(void)
 {
-    std::lock_guard<std::mutex> lkRunning(m_updateThreadRunningMutex);
+    std::lock_guard<std::mutex> lkRunning(m_stateMutex);
     FACOM_setDiscrete(DISCRETE_M, 0, ACTION_RESET);
+    UNIPROT_write("50");
 }
 
 void RoboticHand::unlock(void)
 {
-    std::lock_guard<std::mutex> lkRunning(m_updateThreadRunningMutex);
+    std::lock_guard<std::mutex> lkRunning(m_stateMutex);
     FACOM_setDiscrete(DISCRETE_M, 0, ACTION_SET);
+    UNIPROT_write("51");
 }
 
 bool operator==(const RoboticHand::State &lhs, const RoboticHand::State &rhs)
@@ -223,9 +230,22 @@ std::ostream &operator<<(std::ostream &lhs, const RoboticHand &rhs)
 {
     RoboticHand::State state = rhs.m_state;
 
+    std::string mode;
+    switch(state.mode)
+    {
+        case RoboticHand::ModeAutomatic:
+            mode = "Automatic";
+            break;
+        case RoboticHand::ModeManual:
+            mode = "Manual";
+            break;
+        default:
+            mode = "Lock";
+            break;
+    }
+
     lhs << "{" << std::endl
-        << "\t" << "Mode:          " << (state.mode == RoboticHand::ModeAutomatic
-                                            ? "Automatic" : "Manual") << std::endl
+        << "\t" << "Mode:          " << mode << std::endl
         << "\t" << "Down:          " << state.constructionDown << std::endl
         << "\t" << "Up:            " << state.constructionUp << std::endl
         << "\t" << "Left:          " << state.left << std::endl
