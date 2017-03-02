@@ -94,7 +94,13 @@ void Server::onMessageRecived(const websocketpp::connection_hdl &hdl,
         {
             RoboticHand::State state = m_roboticHand.getState();
 
-            if(command == "right_right")
+            if(command == "grab_toggle")
+            {
+                if(state.picked)
+                    m_roboticHand.place();
+                else
+                    m_roboticHand.pick();
+            } else if(command == "right_right")
             {
                 if(state.rotationUp && state.extendsUnextended)
                     m_roboticHand.extend();
@@ -118,6 +124,23 @@ void Server::onMessageRecived(const websocketpp::connection_hdl &hdl,
                     m_roboticHand.unextend();
                 else if(state.rotationUp && state.extendsUnextended)
                     m_roboticHand.rotateDown();
+                else if(state.rotationDown && state.extendsExtended)
+                    m_roboticHand.extend();
+            } else if(command == "motor2_start")
+            {
+                m_roboticHand.motor2Start();
+            } else if(command == "motor2_stop")
+            {
+                m_roboticHand.motor2Stop();
+            } else if(command == "motor3_start_right")
+            {
+                m_roboticHand.motor3StartRight();
+            } else if(command == "motor3_start_left")
+            {
+                m_roboticHand.motor3StartLeft();
+            } else if(command == "motor3_stop")
+            {
+                m_roboticHand.motor3Stop();
             }
         }
     } catch(Exception &ex) {
