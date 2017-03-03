@@ -20,6 +20,8 @@ include_directories(
 
 set(SOURCES
     src/robotichand.cpp
+    src/socket.cpp
+    src/socketserver.cpp
     src/server.cpp
 )
 
