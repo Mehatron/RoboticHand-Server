@@ -7,10 +7,7 @@
 
 using nlohmann::json;
 
-Server::Server(void)
-{
-}
-
+Server::Server(void) { } 
 Server::~Server(void)
 {
 }
@@ -133,6 +130,12 @@ void Server::onMessageReceived(const std::string &message)
                     m_roboticHand.rotateDown();
                 else if(state.rotationDown && state.extendsExtended)
                     m_roboticHand.extend();
+            } else if(command == "motor1_start")
+            {
+                m_roboticHand.motor1Start();
+            } else if(command == "motor1_stop")
+            {
+                m_roboticHand.motor1Stop();
             } else if(command == "motor2_start")
             {
                 m_roboticHand.motor2Start();
