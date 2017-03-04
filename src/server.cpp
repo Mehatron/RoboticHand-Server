@@ -127,7 +127,7 @@ void Server::onMessageReceived(const std::string &message)
                     m_roboticHand.unextend();
                 else if(state.rotationUp && state.extendsUnextended)
                     m_roboticHand.rotateDown();
-                else if(state.rotationDown && state.extendsExtended)
+                else if(state.rotationDown && state.extendsUnextended)
                     m_roboticHand.extend();
             } else if(command == "motor1_start")
             {
