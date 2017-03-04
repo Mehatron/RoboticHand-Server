@@ -21,9 +21,8 @@ void Server::start(void)
         m_WSServer.listen(Server::WSPORT);
         m_WSServer.start_accept();
 
-        m_roboticHand.open("/dev/ttyUSB0", "/dev/ttyUSB1");
-        //m_roboticHand.lock();
-        m_roboticHand.unlock();
+        m_roboticHand.open("/dev/ttyUSB1", "/dev/ttyUSB0");
+        m_roboticHand.lock();
         m_roboticHand.setMode(RoboticHand::ModeAutomatic);
         m_roboticHand.moveUp();
         m_roboticHand.moveLeft();
