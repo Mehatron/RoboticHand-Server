@@ -22,12 +22,13 @@ void Server::start(void)
         m_WSServer.start_accept();
 
         m_roboticHand.open("/dev/ttyUSB1", "/dev/ttyUSB0");
-        m_roboticHand.lock();
-        m_roboticHand.setMode(RoboticHand::ModeAutomatic);
+        m_roboticHand.unlock();
+        m_roboticHand.setMode(RoboticHand::ModeManual);
         m_roboticHand.moveUp();
         m_roboticHand.moveLeft();
         m_roboticHand.unextend();
-        m_roboticHand.rotateDown();
+        m_roboticHand.setMode(RoboticHand::ModeAutomatic);
+        m_roboticHand.lock();
         m_roboticHand.updateState();
 
         m_roboticHand.start();
