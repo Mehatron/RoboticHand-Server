@@ -2,16 +2,12 @@
 
 #include <iostream>
 #include <boost/bind.hpp>
-#include "json.hpp"
 
 #include "exception.h"
 
 using nlohmann::json;
 
-Server::Server(void)
-{
-}
-
+Server::Server(void) { } 
 Server::~Server(void)
 {
 }
@@ -21,9 +17,9 @@ void Server::start(void)
     try {
         setupHandlers();
 
-        m_server.init_asio();
-        m_server.listen(Server::PORT);
-        m_server.start_accept();
+        m_WSServer.init_asio();
+        m_WSServer.listen(Server::WSPORT);
+        m_WSServer.start_accept();
 
         m_roboticHand.open("/dev/ttyUSB1", "/dev/ttyUSB0");
         m_roboticHand.lock();
@@ -35,7 +31,8 @@ void Server::start(void)
         m_roboticHand.updateState();
 
         m_roboticHand.start();
-        m_server.run();
+        m_socketServer.start(Server::PORT);
+        m_WSServer.run();
     } catch(websocketpp::exception &ex) {
         throw Exception(ex.what());
     }
@@ -53,7 +50,14 @@ void Server::toggleLock(void)
 void Server::onClientConnected(const websocketpp::connection_hdl &hdl)
 {
     m_clients.insert(hdl);
-    sendState(hdl, m_roboticHand.getState());
+    json state = stateToJSON(m_roboticHand.getState());
+    m_WSServer.send(hdl, state.dump(), websocketpp::frame::opcode::text);
+}
+
+void Server::onClientConnected(Socket *client)
+{
+    json state = stateToJSON(m_roboticHand.getState());
+    client->sendString(state.dump());
 }
 
 void Server::onClientDisconnected(const websocketpp::connection_hdl &hdl)
@@ -61,11 +65,10 @@ void Server::onClientDisconnected(const websocketpp::connection_hdl &hdl)
     m_clients.erase(hdl);
 }
 
-void Server::onMessageRecived(const websocketpp::connection_hdl &hdl,
-                              const WSServer::message_ptr &msg)
+void Server::onMessageReceived(const std::string &message)
 {
     try {
-        std::string command = msg->get_payload();
+        std::string command = message;
         if(command == "mode_automatic")
             m_roboticHand.setMode(RoboticHand::ModeAutomatic);
         else if(command == "mode_manual")
@@ -126,6 +129,12 @@ void Server::onMessageRecived(const websocketpp::connection_hdl &hdl,
                     m_roboticHand.rotateDown();
                 else if(state.rotationDown && state.extendsExtended)
                     m_roboticHand.extend();
+            } else if(command == "motor1_start")
+            {
+                m_roboticHand.motor1Start();
+            } else if(command == "motor1_stop")
+            {
+                m_roboticHand.motor1Stop();
             } else if(command == "motor2_start")
             {
                 m_roboticHand.motor2Start();
@@ -150,24 +159,34 @@ void Server::onMessageRecived(const websocketpp::connection_hdl &hdl,
 
 void Server::onRoboticHandStateChanged(const RoboticHand::State &state)
 {
+    json data = stateToJSON(state);
+    m_socketServer.sendToAll(data.dump());
     for(auto client : m_clients)
-        sendState(client, state);
+        m_WSServer.send(client, data.dump(), websocketpp::frame::opcode::text);
 }
 
 void Server::setupHandlers(void)
 {
-    m_server.set_open_handler([this](const websocketpp::connection_hdl &hdl)
+    m_WSServer.set_open_handler([this](const websocketpp::connection_hdl &hdl)
         {
             onClientConnected(hdl);
         });
-    m_server.set_close_handler([this](const websocketpp::connection_hdl &hdl)
+    m_socketServer.setOnClientConnectHandler([this](Socket *client)
+        {
+            onClientConnected(client);
+        });
+    m_WSServer.set_close_handler([this](const websocketpp::connection_hdl &hdl)
         {
             onClientDisconnected(hdl);
         });
-    m_server.set_message_handler([this](const websocketpp::connection_hdl &hdl,
+    m_WSServer.set_message_handler([this](const websocketpp::connection_hdl &hdl,
                                         const WSServer::message_ptr &msg)
         {
-            onMessageRecived(hdl, msg);
+            onMessageReceived(msg->get_payload());
+        });
+    m_socketServer.setOnMessageHandler([this](const Socket *socket, const std::string &message)
+        {
+            onMessageReceived(message);
         });
     m_roboticHand.setOnStateChangedHandler([this](const RoboticHand::State &state)
         {
@@ -175,8 +194,7 @@ void Server::setupHandlers(void)
         });
 }
 
-void Server::sendState(const websocketpp::connection_hdl &client,
-                       const RoboticHand::State &state)
+json Server::stateToJSON(const RoboticHand::State &state) const
 {
     json data = {
         { "construction_down", state.constructionDown },
@@ -203,5 +221,5 @@ void Server::sendState(const websocketpp::connection_hdl &client,
             break;
     }
 
-    m_server.send(client, data.dump(), websocketpp::frame::opcode::text);
+    return data;
 }

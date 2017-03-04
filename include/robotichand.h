@@ -65,6 +65,8 @@ public:
     void lock(void);
     void unlock(void);
 
+    void motor1Start(void);
+    void motor1Stop(void);
     void motor2Start(void);
     void motor2Stop(void);
     void motor3StartRight(void);

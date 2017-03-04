@@ -130,11 +130,11 @@ void RoboticHand::updateState(void)
             FACOM_setDiscrete(DISCRETE_M, 11, ACTION_RESET);
         } else if(status[12])
         {
-            err = UNIPROT_write("21");
+            err = UNIPROT_write("22");
             FACOM_setDiscrete(DISCRETE_M, 12, ACTION_RESET);
         } else if(status[13])
         {
-            err = UNIPROT_write("31");
+            err = UNIPROT_write("21");
             FACOM_setDiscrete(DISCRETE_M, 13, ACTION_RESET);
         }
 
@@ -209,6 +209,16 @@ void RoboticHand::unlock(void)
     UNIPROT_write("51");
 }
 
+void RoboticHand::motor1Start(void)
+{
+    UNIPROT_write("41");
+}
+
+void RoboticHand::motor1Stop(void)
+{
+    UNIPROT_write("40");
+}
+
 void RoboticHand::motor2Start(void)
 {
     UNIPROT_write("15");
@@ -216,7 +226,7 @@ void RoboticHand::motor2Start(void)
 
 void RoboticHand::motor2Stop(void)
 {
-    UNIPROT_write("11");
+    UNIPROT_write("10");
 }
 
 void RoboticHand::motor3StartRight(void)
