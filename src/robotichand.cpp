@@ -209,6 +209,31 @@ void RoboticHand::unlock(void)
     UNIPROT_write("51");
 }
 
+void RoboticHand::motor2Start(void)
+{
+    UNIPROT_write("15");
+}
+
+void RoboticHand::motor2Stop(void)
+{
+    UNIPROT_write("11");
+}
+
+void RoboticHand::motor3StartRight(void)
+{
+    UNIPROT_write("25");
+}
+
+void RoboticHand::motor3StartLeft(void)
+{
+    UNIPROT_write("26");
+}
+
+void RoboticHand::motor3Stop(void)
+{
+    UNIPROT_write("20");
+}
+
 bool operator==(const RoboticHand::State &lhs, const RoboticHand::State &rhs)
 {
     if(lhs.mode != rhs.mode ||

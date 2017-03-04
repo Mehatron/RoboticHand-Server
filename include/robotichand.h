@@ -65,6 +65,12 @@ public:
     void lock(void);
     void unlock(void);
 
+    void motor2Start(void);
+    void motor2Stop(void);
+    void motor3StartRight(void);
+    void motor3StartLeft(void);
+    void motor3Stop(void);
+
     friend std::ostream &operator<<(std::ostream &lhs, const RoboticHand &rhs);
 
 private:
