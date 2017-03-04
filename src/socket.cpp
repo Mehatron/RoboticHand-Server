@@ -47,5 +47,7 @@ void Socket::receiving(void)
             break;
 
         m_server->messageReceived(this, std::string(buffer));
+        if(strcmp(buffer, "close") == 0)
+            break;
     }
 }
