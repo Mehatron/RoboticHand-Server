@@ -43,7 +43,7 @@ void Socket::receiving(void)
     while(true)
     {
         char buffer[BUFFER_SIZE];
-        if(recv(m_socket, buffer, BUFFER_SIZE, 0) < 0)
+        if(recv(m_socket, buffer, BUFFER_SIZE, 0) <= 0)
             break;
 
         m_server->messageReceived(this, std::string(buffer));

@@ -7,7 +7,10 @@
 
 using nlohmann::json;
 
-Server::Server(void) { } 
+Server::Server(void)
+{
+}
+
 Server::~Server(void)
 {
 }
